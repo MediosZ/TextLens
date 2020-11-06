@@ -9,25 +9,70 @@ import Cocoa
 import SwiftUI
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
-    var window: NSWindow!
-
+    var popover: NSPopover!
+    var statusBarItem: NSStatusItem!
+    var statusBarMenu: NSMenu!
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
         let contentView = ContentView().environment(\.managedObjectContext, persistentContainer.viewContext)
+        
+        // create the propver
+        let popover = NSPopover()
+        popover.contentSize = NSSize(width: 400, height: 400)
+        popover.behavior = .transient
+        popover.contentViewController = NSHostingController(rootView: contentView)
+        self.popover = popover
+        
+        self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
+        if let button = self.statusBarItem.button {
+            button.image = NSImage(named: "Icon")
+            button.action = #selector(togglePopover(_:))
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        }
+        
+        statusBarMenu = NSMenu(title: "Status Bar Menu")
+        statusBarMenu.delegate = self
+        statusBarMenu.addItem(
+            withTitle: "Order an apple",
+            action: #selector(AppDelegate.orderAnApple),
+            keyEquivalent: "")
+        statusBarMenu.addItem(
+            withTitle: "Cancel apple order",
+            action: #selector(AppDelegate.cancelAppleOrder),
+            keyEquivalent: "")
 
-        // Create the window and set the content view.
-        window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-            backing: .buffered, defer: false)
-        window.center()
-        window.setFrameAutosaveName("Main Window")
-        window.contentView = NSHostingView(rootView: contentView)
-        window.makeKeyAndOrderFront(nil)
+    }
+    
+    @objc func togglePopover(_ sender: NSStatusBarButton) {
+        if let button = self.statusBarItem.button, let event = NSApp.currentEvent {
+            if event.type == NSEvent.EventType.rightMouseUp{
+                statusBarItem.menu = statusBarMenu // add menu to button...
+                statusBarItem.button?.performClick(nil) // ...and click
+            }
+            else{
+                if self.popover.isShown {
+                    self.popover.performClose(sender)
+                    
+                } else {
+                    self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
+                    self.popover.contentViewController?.view.window?.becomeKey()
+                }
+            }
+
+        }
+    }
+
+
+    @objc func orderAnApple() {
+        print("Ordering a apple!")
+    }
+
+    @objc func cancelAppleOrder() {
+        print("Canceling your order :(")
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -37,26 +82,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Core Data stack
 
     lazy var persistentContainer: NSPersistentContainer = {
-        /*
-         The persistent container for the application. This implementation
-         creates and returns a container, having loaded the store for the
-         application to it. This property is optional since there are legitimate
-         error conditions that could cause the creation of the store to fail.
-        */
         let container = NSPersistentContainer(name: "TextLens")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                 
-                /*
-                 Typical reasons for an error here include:
-                 * The parent directory does not exist, cannot be created, or disallows writing.
-                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                 * The device is out of space.
-                 * The store could not be migrated to the current model version.
-                 Check the error message to determine what the actual problem was.
-                 */
                 fatalError("Unresolved error \(error)")
             }
         })
@@ -132,4 +160,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
 }
-
