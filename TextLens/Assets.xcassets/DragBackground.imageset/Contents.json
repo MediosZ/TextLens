@@ -1,0 +1,15 @@
+{
+  "images" : [
+    {
+      "filename" : "Sphere Code.png",
+      "idiom" : "mac"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "localizable" : true
+  }
+}

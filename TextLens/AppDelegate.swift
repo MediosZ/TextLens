@@ -18,12 +18,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-        let contentView = ContentView().environment(\.managedObjectContext, persistentContainer.viewContext)
+
         
         // create the propver
         let popover = NSPopover()
+        let contentView = ContentView()
+            .environment(\.managedObjectContext, persistentContainer.viewContext)
+        
         popover.contentSize = NSSize(width: 400, height: 400)
-        popover.behavior = .transient
+        popover.behavior = .applicationDefined
         popover.contentViewController = NSHostingController(rootView: contentView)
         self.popover = popover
         
@@ -44,6 +47,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             withTitle: "Cancel apple order",
             action: #selector(AppDelegate.cancelAppleOrder),
             keyEquivalent: "")
+    
 
     }
     
