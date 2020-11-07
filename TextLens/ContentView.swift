@@ -84,13 +84,17 @@ struct ContentView: View {
                 let pb = NSPasteboard.general
                 if let filepath = pb.string(forType: .fileURL), let url = URL(string: filepath), let image = NSImage(contentsOf: url){
                     print("detect file url")
-                    self.image = image
+                    DispatchQueue.main.async {
+                        self.image = image
+                    }
                     saveImageToDownload(image: image)
                     performOCR(image: image)
                 }
                 else if let data = pb.data(forType: .tiff), let image = NSImage(data: data){
                     print("detect image data")
-                    self.image = image
+                    DispatchQueue.main.async {
+                        self.image = image
+                    }
                     saveImageToDownload(image: image)
                     performOCR(image: image)
                 }
@@ -105,12 +109,15 @@ struct ContentView: View {
     func performOCR(image: NSImage){
         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
         let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
+        print(textRecognitionRequest.recognitionLanguages)
+        textRecognitionRequest.recognitionLanguages = ["en_US"]
+        textRecognitionRequest.usesLanguageCorrection = true
         do {
             try requestHandler.perform([textRecognitionRequest])
         } catch _ {}
     }
     
-    func saveImageToDownload(image: NSImage, name: String = "image"){
+    func saveImageToDownload(image: NSImage, name: String = "image.png"){
         let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
         let destinationURL = desktopURL.appendingPathComponent(name)
         if image.pngWrite(to: destinationURL) {
@@ -155,23 +162,32 @@ struct TestImageDragDrop: View {
             .aspectRatio(contentMode: .fit)
             .onDrop(of: ["public.file-url"], isTargeted: $dragOver) { providers -> Bool in
                 providers.first?.loadDataRepresentation(forTypeIdentifier: "public.file-url", completionHandler: { (data, error) in
-                    if let data = data, let path = NSString(data: data, encoding: 4), let url = URL(string: path as String) {
-                        let image = NSImage(contentsOf: url)
-                        DispatchQueue.main.async {
-                            self.image = image!
+                    if let data = data,
+                       let path = NSString(data: data, encoding: 4),
+                       let url = URL(string: path as String) {
+                        if let image = NSImage(contentsOf: url){
+                            DispatchQueue.main.async {
+                                self.image = image
+                            }
+                            performOCR(image: image)
                         }
-                        let requestHandler = VNImageRequestHandler(cgImage: image!.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
-                        let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-                        do {
-                            try requestHandler.perform([textRecognitionRequest])
-                        } catch _ {}
-                        
                     }
                 })
                 
                 return true
             }
             .border(dragOver ? Color.red : Color.clear)
+    }
+    
+    func performOCR(image: NSImage){
+        let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
+        let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
+        print(textRecognitionRequest.recognitionLanguages)
+        textRecognitionRequest.recognitionLanguages = ["en_US"]
+        textRecognitionRequest.usesLanguageCorrection = true
+        do {
+            try requestHandler.perform([textRecognitionRequest])
+        } catch _ {}
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
