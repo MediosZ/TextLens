@@ -52,7 +52,21 @@ class OCRManager{
 }
 
 
-
+extension NSImage {
+    var pngData: Data? {
+        guard let tiffRepresentation = tiffRepresentation, let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else { return nil }
+        return bitmapImage.representation(using: .png, properties: [:])
+    }
+    func pngWrite(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
+        do {
+            try pngData?.write(to: url, options: options)
+            return true
+        } catch {
+            print(error)
+            return false
+        }
+    }
+}
 
 
 struct ContentView: View {
@@ -66,22 +80,19 @@ struct ContentView: View {
                 .frame(width: 100, height: 100, alignment: .center)
             Text(text)
             Button(action: {
-                print("click")
+                
                 let pb = NSPasteboard.general
-                if let imgData = pb.data(forType: .tiff){
-                    self.image = NSImage(data: imgData) ?? NSImage()
-                    /*
-                    let desktopURL = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
-                    let destinationURL = desktopURL.appendingPathComponent("my-image.png")
-                    if self.image.pngWrite(to: destinationURL, options: .withoutOverwriting) {
-                        print("File saved")
-                    }
-                    */
-                    let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
-                    let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-                    do {
-                        try requestHandler.perform([textRecognitionRequest])
-                    } catch _ {}
+                if let filepath = pb.string(forType: .fileURL), let url = URL(string: filepath), let image = NSImage(contentsOf: url){
+                    print("detect file url")
+                    self.image = image
+                    saveImageToDownload(image: image)
+                    performOCR(image: image)
+                }
+                else if let data = pb.data(forType: .tiff), let image = NSImage(data: data){
+                    print("detect image data")
+                    self.image = image
+                    saveImageToDownload(image: image)
+                    performOCR(image: image)
                 }
                 
             }, label: {
@@ -89,6 +100,22 @@ struct ContentView: View {
                 
             })
         }.frame(width: 200, height: 200, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+    }
+    
+    func performOCR(image: NSImage){
+        let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
+        let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
+        do {
+            try requestHandler.perform([textRecognitionRequest])
+        } catch _ {}
+    }
+    
+    func saveImageToDownload(image: NSImage, name: String = "image"){
+        let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
+        let destinationURL = desktopURL.appendingPathComponent(name)
+        if image.pngWrite(to: destinationURL) {
+            print("File \(image) saved ro \(destinationURL)")
+        }
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
