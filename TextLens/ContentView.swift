@@ -87,7 +87,7 @@ struct ContentView: View {
                     DispatchQueue.main.async {
                         self.image = image
                     }
-                    saveImageToDownload(image: image)
+                    //saveImageToDownload(image: image)
                     performOCR(image: image)
                 }
                 else if let data = pb.data(forType: .tiff), let image = NSImage(data: data){
@@ -95,7 +95,7 @@ struct ContentView: View {
                     DispatchQueue.main.async {
                         self.image = image
                     }
-                    saveImageToDownload(image: image)
+                    //saveImageToDownload(image: image)
                     performOCR(image: image)
                 }
                 
@@ -126,17 +126,6 @@ struct ContentView: View {
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
-        /*
-        if let results = request.results as? [VNRecognizedTextObservation]{
-            var displayResults: [((CGPoint, CGPoint, CGPoint, CGPoint), String)] = []
-            for observation in results {
-                let candidate: VNRecognizedText = observation.topCandidates(1)[0]
-                let candidateBounds = (observation.bottomLeft, observation.bottomRight, observation.topRight, observation.topLeft)
-                displayResults.append((candidateBounds, candidate.string))
-            }
-        }
-        */
-        // Update transcript view.
         if let results = request.results as? [VNRecognizedTextObservation]{
             var transcript: String = ""
             for observation in results {
@@ -144,8 +133,10 @@ struct ContentView: View {
                 transcript.append("\n")
             }
             self.text = transcript
-            NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
-            NSPasteboard.general.setString(transcript, forType: .string)
+            if UserDefaults.standard.bool(forKey: "copyToPasteBoard") {
+                NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
+                NSPasteboard.general.setString(transcript, forType: .string)
+            }
         }
         
     }
@@ -209,8 +200,10 @@ struct TestImageDragDrop: View {
                 transcript.append("\n")
             }
             self.text = transcript
-            NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
-            NSPasteboard.general.setString(transcript, forType: .string)
+            if UserDefaults.standard.bool(forKey: "copyToPasteBoard") {
+                NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
+                NSPasteboard.general.setString(transcript, forType: .string)
+            }
         }
         
     }

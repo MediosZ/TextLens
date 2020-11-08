@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Preferences
+import Combine
 
 /**
 Function wrapping SwiftUI into `PreferencePane`, which is mimicking view controller's default construction syntax.
@@ -27,7 +28,7 @@ let GeneralPreferenceViewController: () -> PreferencePane = {
 /**
 The main view of “Accounts” preference pane.
 */
-struct GeneralView: View {
+struct GeneralViewSample: View {
     @State private var isOn1 = true
     @State private var isOn2 = false
     @State private var isOn3 = true
@@ -73,6 +74,41 @@ struct GeneralView: View {
                     .frame(width: 120.0)
                 Text("Automatic mode can slow things down.")
                     .preferenceDescription()
+            }
+        }
+    }
+}
+
+struct GeneralView: View{
+    private let contentWidth: Double = 500.0
+    @State private var startAtLaunch: Bool = UserDefaults.standard.bool(forKey: "startAtLaunch")
+    @State private var copyToPasteBoard: Bool = UserDefaults.standard.bool(forKey: "copyToPasteBoard")
+    
+    
+    @State private var useHotkey: Bool = UserDefaults.standard.bool(forKey: "useHotkey")
+    
+    var body: some View{
+        Preferences.Container(contentWidth: contentWidth){
+            Preferences.Section(label: {
+                Text("General:")
+            }){
+                Toggle("Copy Recognition Result to PasteBoard", isOn: self.$copyToPasteBoard)
+                    .onReceive(Just(copyToPasteBoard), perform: { value in
+                        UserDefaults.standard.setValue(value, forKey: "copyToPasteBoard")
+                    })
+                Text("Copy recognition result to pasteboard automatically if recognition succeed.").preferenceDescription()
+                Toggle("Start at Launch", isOn: self.$startAtLaunch)
+                    .onReceive(Just(startAtLaunch), perform: { value in
+                    UserDefaults.standard.setValue(value, forKey: "startAtLaunch")
+                })
+            }
+            Preferences.Section(label: {
+                Toggle("Hotkey:", isOn: self.$useHotkey)
+                    .onReceive(Just(useHotkey), perform: { value in
+                    UserDefaults.standard.setValue(value, forKey: "useHotkey")
+                })
+            }){
+                Text("some hot keys")
             }
         }
     }

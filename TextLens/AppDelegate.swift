@@ -61,6 +61,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             withTitle: "Quit",
             action: #selector(AppDelegate.quit),
             keyEquivalent: "")
+        
+        
     
 
     }
