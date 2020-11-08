@@ -78,7 +78,7 @@ struct ContentView: View {
         VStack{
             TestImageDragDrop(text: $text, image: $image)
                 .frame(width: 100, height: 100, alignment: .center)
-            Text(text)
+            
             Button(action: {
                 
                 let pb = NSPasteboard.general
@@ -100,10 +100,11 @@ struct ContentView: View {
                 }
                 
             }, label: {
-                Text("From Clipboard")
+                Text("From PasteBoard")
                 
             })
-        }.frame(width: 200, height: 200, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+            Text(text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+        }.frame(width: 300, height: 300, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
     }
     
     func performOCR(image: NSImage){

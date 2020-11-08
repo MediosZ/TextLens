@@ -17,6 +17,8 @@
 		9E17FE74255599E000FFDC62 /* TextLensUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17FE73255599E000FFDC62 /* TextLensUITests.swift */; };
 		9E4D99A42557C534000694EA /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4D99A32557C534000694EA /* Preference.swift */; };
 		9E4D99AA2557C5FF000694EA /* Preferences in Frameworks */ = {isa = PBXBuildFile; productRef = 9E4D99A92557C5FF000694EA /* Preferences */; };
+		9E4D99B32557EE97000694EA /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9E4D99B22557EE97000694EA /* KeyboardShortcuts */; };
+		9E4D99B82557F156000694EA /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4D99B72557F156000694EA /* Model.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,7 @@
 		9E17FE73255599E000FFDC62 /* TextLensUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLensUITests.swift; sourceTree = "<group>"; };
 		9E17FE75255599E000FFDC62 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E4D99A32557C534000694EA /* Preference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preference.swift; sourceTree = "<group>"; };
+		9E4D99B72557F156000694EA /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E4D99AA2557C5FF000694EA /* Preferences in Frameworks */,
+				9E4D99B32557EE97000694EA /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +117,7 @@
 				9E17FE5F255599E000FFDC62 /* TextLens.entitlements */,
 				9E17FE53255599DF00FFDC62 /* TextLens.xcdatamodeld */,
 				9E17FE58255599E000FFDC62 /* Preview Content */,
+				9E4D99B72557F156000694EA /* Model.swift */,
 			);
 			path = TextLens;
 			sourceTree = "<group>";
@@ -161,6 +166,7 @@
 			name = TextLens;
 			packageProductDependencies = (
 				9E4D99A92557C5FF000694EA /* Preferences */,
+				9E4D99B22557EE97000694EA /* KeyboardShortcuts */,
 			);
 			productName = TextLens;
 			productReference = 9E17FE4C255599DF00FFDC62 /* TextLens.app */;
@@ -235,6 +241,7 @@
 			mainGroup = 9E17FE43255599DF00FFDC62;
 			packageReferences = (
 				9E4D99A82557C5FF000694EA /* XCRemoteSwiftPackageReference "Preferences" */,
+				9E4D99B12557EE97000694EA /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
 			productRefGroup = 9E17FE4D255599DF00FFDC62 /* Products */;
 			projectDirPath = "";
@@ -279,6 +286,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E4D99B82557F156000694EA /* Model.swift in Sources */,
 				9E17FE52255599DF00FFDC62 /* ContentView.swift in Sources */,
 				9E17FE55255599DF00FFDC62 /* TextLens.xcdatamodeld in Sources */,
 				9E4D99A42557C534000694EA /* Preference.swift in Sources */,
@@ -626,6 +634,14 @@
 				minimumVersion = 2.0.1;
 			};
 		};
+		9E4D99B12557EE97000694EA /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -633,6 +649,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9E4D99A82557C5FF000694EA /* XCRemoteSwiftPackageReference "Preferences" */;
 			productName = Preferences;
+		};
+		9E4D99B22557EE97000694EA /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9E4D99B12557EE97000694EA /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
 		};
 /* End XCSwiftPackageProductDependency section */
 

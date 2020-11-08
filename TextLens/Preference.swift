@@ -8,6 +8,11 @@
 import SwiftUI
 import Preferences
 import Combine
+import KeyboardShortcuts
+
+extension KeyboardShortcuts.Name {
+    static let fromPasteBoard = Self("fromPasteBoard")
+}
 
 /**
 Function wrapping SwiftUI into `PreferencePane`, which is mimicking view controller's default construction syntax.
@@ -19,96 +24,39 @@ let GeneralPreferenceViewController: () -> PreferencePane = {
         title: "General",
         toolbarIcon: NSImage(named: NSImage.userAccountsName)!
     ) {
-        GeneralView()
+        GeneralView().environmentObject(UserPreference.shared)
     }
 
     return Preferences.PaneHostingController(pane: paneView)
 }
 
-/**
-The main view of “Accounts” preference pane.
-*/
-struct GeneralViewSample: View {
-    @State private var isOn1 = true
-    @State private var isOn2 = false
-    @State private var isOn3 = true
-    @State private var selection1 = 1
-    @State private var selection2 = 0
-    @State private var selection3 = 0
-    private let contentWidth: Double = 450.0
-
-    var body: some View {
-        Preferences.Container(contentWidth: contentWidth) {
-            Preferences.Section(title: "Permissions:") {
-                Toggle("Allow user to administer this computer", isOn: self.$isOn1)
-                Text("Administrator has root access to this machine.")
-                    .preferenceDescription()
-                Toggle("Allow user to access every file", isOn: self.$isOn2)
-            }
-            Preferences.Section(title: "Show scroll bars:") {
-                Picker("", selection: self.$selection1) {
-                    Text("When scrolling").tag(0)
-                    Text("Always").tag(1)
-                }
-                    .labelsHidden()
-                    .pickerStyle(RadioGroupPickerStyle())
-            }
-            Preferences.Section(label: {
-                Toggle("Some toggle", isOn: self.$isOn3)
-            }) {
-                Picker("", selection: self.$selection2) {
-                    Text("Automatic").tag(0)
-                    Text("Manual").tag(1)
-                }
-                    .labelsHidden()
-                    .frame(width: 120.0)
-                Text("Automatic mode can slow things down.")
-                    .preferenceDescription()
-            }
-            Preferences.Section(title: "Preview mode:") {
-                Picker("", selection: self.$selection3) {
-                    Text("Automatic").tag(0)
-                    Text("Manual").tag(1)
-                }
-                    .labelsHidden()
-                    .frame(width: 120.0)
-                Text("Automatic mode can slow things down.")
-                    .preferenceDescription()
-            }
-        }
-    }
-}
-
 struct GeneralView: View{
     private let contentWidth: Double = 500.0
-    @State private var startAtLaunch: Bool = UserDefaults.standard.bool(forKey: "startAtLaunch")
-    @State private var copyToPasteBoard: Bool = UserDefaults.standard.bool(forKey: "copyToPasteBoard")
-    
-    
-    @State private var useHotkey: Bool = UserDefaults.standard.bool(forKey: "useHotkey")
+    @EnvironmentObject var preference: UserPreference
     
     var body: some View{
         Preferences.Container(contentWidth: contentWidth){
             Preferences.Section(label: {
                 Text("General:")
             }){
-                Toggle("Copy Recognition Result to PasteBoard", isOn: self.$copyToPasteBoard)
-                    .onReceive(Just(copyToPasteBoard), perform: { value in
-                        UserDefaults.standard.setValue(value, forKey: "copyToPasteBoard")
+                Toggle("Copy Recognition Result to PasteBoard", isOn: $preference.copyToPasteBoard)
+                    .onReceive(Just(preference.copyToPasteBoard), perform: { value in
+                        preference.copyToPasteBoard = value
                     })
                 Text("Copy recognition result to pasteboard automatically if recognition succeed.").preferenceDescription()
-                Toggle("Start at Launch", isOn: self.$startAtLaunch)
-                    .onReceive(Just(startAtLaunch), perform: { value in
-                    UserDefaults.standard.setValue(value, forKey: "startAtLaunch")
+                Toggle("Start at Launch", isOn: $preference.startAtLaunch)
+                    .onReceive(Just(preference.startAtLaunch), perform: { value in
+                        preference.startAtLaunch = value
                 })
             }
             Preferences.Section(label: {
-                Toggle("Hotkey:", isOn: self.$useHotkey)
-                    .onReceive(Just(useHotkey), perform: { value in
-                    UserDefaults.standard.setValue(value, forKey: "useHotkey")
+                Toggle("Hotkey:", isOn: $preference.useHotkey)
+                    .onReceive(Just(preference.useHotkey), perform: { value in
+                        preference.useHotkey = value
                 })
             }){
-                Text("some hot keys")
+                Text("Perform OCR on image from pasteboard")
+                KeyboardShortcuts.Recorder(for: .fromPasteBoard)
             }
         }
     }

@@ -8,6 +8,7 @@
 import Cocoa
 import SwiftUI
 import Preferences
+import KeyboardShortcuts
 
 extension Preferences.PaneIdentifier {
     static let general = Self("general")
@@ -63,7 +64,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             keyEquivalent: "")
         
         
-    
+        // hot keys
+        KeyboardShortcuts.onKeyUp(for: .fromPasteBoard) {
+            // The user pressed the keyboard shortcut for “unicorn mode”!
+            print("perform ocr from pasteboard")
+        }
 
     }
     
