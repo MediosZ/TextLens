@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,8 @@
 		9E17FE5D255599E000FFDC62 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9E17FE5B255599E000FFDC62 /* Main.storyboard */; };
 		9E17FE69255599E000FFDC62 /* TextLensTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17FE68255599E000FFDC62 /* TextLensTests.swift */; };
 		9E17FE74255599E000FFDC62 /* TextLensUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17FE73255599E000FFDC62 /* TextLensUITests.swift */; };
+		9E4D99A42557C534000694EA /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4D99A32557C534000694EA /* Preference.swift */; };
+		9E4D99AA2557C5FF000694EA /* Preferences in Frameworks */ = {isa = PBXBuildFile; productRef = 9E4D99A92557C5FF000694EA /* Preferences */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +52,7 @@
 		9E17FE6F255599E000FFDC62 /* TextLensUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TextLensUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E17FE73255599E000FFDC62 /* TextLensUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLensUITests.swift; sourceTree = "<group>"; };
 		9E17FE75255599E000FFDC62 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9E4D99A32557C534000694EA /* Preference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preference.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E4D99AA2557C5FF000694EA /* Preferences in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +106,7 @@
 			children = (
 				9E17FE4F255599DF00FFDC62 /* AppDelegate.swift */,
 				9E17FE51255599DF00FFDC62 /* ContentView.swift */,
+				9E4D99A32557C534000694EA /* Preference.swift */,
 				9E17FE56255599E000FFDC62 /* Assets.xcassets */,
 				9E17FE5B255599E000FFDC62 /* Main.storyboard */,
 				9E17FE5E255599E000FFDC62 /* Info.plist */,
@@ -154,6 +159,9 @@
 			dependencies = (
 			);
 			name = TextLens;
+			packageProductDependencies = (
+				9E4D99A92557C5FF000694EA /* Preferences */,
+			);
 			productName = TextLens;
 			productReference = 9E17FE4C255599DF00FFDC62 /* TextLens.app */;
 			productType = "com.apple.product-type.application";
@@ -225,6 +233,9 @@
 				Base,
 			);
 			mainGroup = 9E17FE43255599DF00FFDC62;
+			packageReferences = (
+				9E4D99A82557C5FF000694EA /* XCRemoteSwiftPackageReference "Preferences" */,
+			);
 			productRefGroup = 9E17FE4D255599DF00FFDC62 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -270,6 +281,7 @@
 			files = (
 				9E17FE52255599DF00FFDC62 /* ContentView.swift in Sources */,
 				9E17FE55255599DF00FFDC62 /* TextLens.xcdatamodeld in Sources */,
+				9E4D99A42557C534000694EA /* Preference.swift in Sources */,
 				9E17FE50255599DF00FFDC62 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -604,6 +616,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9E4D99A82557C5FF000694EA /* XCRemoteSwiftPackageReference "Preferences" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Preferences";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9E4D99A92557C5FF000694EA /* Preferences */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9E4D99A82557C5FF000694EA /* XCRemoteSwiftPackageReference "Preferences" */;
+			productName = Preferences;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		9E17FE53255599DF00FFDC62 /* TextLens.xcdatamodeld */ = {
