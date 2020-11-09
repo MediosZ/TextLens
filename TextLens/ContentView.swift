@@ -77,7 +77,8 @@ struct ContentView: View {
     var body: some View {
         VStack{
             TestImageDragDrop(text: $text, image: $image)
-                .frame(width: 100, height: 100, alignment: .center)
+                .frame(width: 200, height: 200, alignment: .center)
+                .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
             
             Button(action: {
                 

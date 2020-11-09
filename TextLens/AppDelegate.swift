@@ -22,9 +22,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var statusBarMenu: NSMenu!
     
     
-    
-    lazy var preferencesWindowController = PreferencesWindowController(
-        preferencePanes: [GeneralPreferenceViewController()],
+    let userPreference = UserPreference()
+    lazy var preferencesWindowController: PreferencesWindowController = PreferencesWindowController(
+        preferencePanes: [GeneralPreferenceViewController(userPreference)],
         style: .segmentedControl,
         animated: true,
         hidesToolbarForSingleItem: true
@@ -62,6 +62,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             withTitle: "Quit",
             action: #selector(AppDelegate.quit),
             keyEquivalent: "")
+        
+        
+        
+
         
         
         // hot keys

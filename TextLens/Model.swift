@@ -33,7 +33,7 @@ class UserPreference: ObservableObject {
     
     static let shared = UserPreference()
     
-    private init(){
+    init(){
         startAtLaunch = UserDefaults.standard.bool(forKey: "startAtLaunch")
         copyToPasteBoard = UserDefaults.standard.bool(forKey: "copyToPasteBoard")
         useHotkey = UserDefaults.standard.bool(forKey: "useHotkey")

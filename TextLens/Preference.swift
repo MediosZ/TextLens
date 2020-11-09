@@ -17,14 +17,14 @@ extension KeyboardShortcuts.Name {
 /**
 Function wrapping SwiftUI into `PreferencePane`, which is mimicking view controller's default construction syntax.
 */
-let GeneralPreferenceViewController: () -> PreferencePane = {
+let GeneralPreferenceViewController: (_ userPreference: UserPreference) -> PreferencePane = {preference in
     /// Wrap your custom view into `Preferences.Pane`, while providing necessary toolbar info.
     let paneView = Preferences.Pane(
         identifier: .general,
         title: "General",
         toolbarIcon: NSImage(named: NSImage.userAccountsName)!
     ) {
-        GeneralView().environmentObject(UserPreference.shared)
+        GeneralView(preference: preference)
     }
 
     return Preferences.PaneHostingController(pane: paneView)
@@ -32,7 +32,7 @@ let GeneralPreferenceViewController: () -> PreferencePane = {
 
 struct GeneralView: View{
     private let contentWidth: Double = 500.0
-    @EnvironmentObject var preference: UserPreference
+    @ObservedObject var preference: UserPreference
     
     var body: some View{
         Preferences.Container(contentWidth: contentWidth){
@@ -64,6 +64,6 @@ struct GeneralView: View{
 
 struct GeneralView_Previews: PreviewProvider {
     static var previews: some View {
-        GeneralView()
+        GeneralView(preference: UserPreference())
     }
 }
