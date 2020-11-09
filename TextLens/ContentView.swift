@@ -70,13 +70,11 @@ extension NSImage {
 
 
 struct ContentView: View {
-    
-    @State var text: String = "recognition"
-    @State var image: NSImage = NSImage(named: "DragBackground") ?? NSImage()
+    @ObservedObject var dataModel: DataModel
     
     var body: some View {
         VStack{
-            TestImageDragDrop(text: $text, image: $image)
+            TestImageDragDrop(text: $dataModel.text, image: $dataModel.image, hasImage: $dataModel.hasImage)
                 .frame(width: 150, height: 150, alignment: .center)
                 .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
             
@@ -86,7 +84,8 @@ struct ContentView: View {
                 if let filepath = pb.string(forType: .fileURL), let url = URL(string: filepath), let image = NSImage(contentsOf: url){
                     print("detect file url")
                     DispatchQueue.main.async {
-                        self.image = image
+                        dataModel.image = image
+                        dataModel.hasImage = true
                     }
                     //saveImageToDownload(image: image)
                     performOCR(image: image)
@@ -94,7 +93,8 @@ struct ContentView: View {
                 else if let data = pb.data(forType: .tiff), let image = NSImage(data: data){
                     print("detect image data")
                     DispatchQueue.main.async {
-                        self.image = image
+                        dataModel.image = image
+                        dataModel.hasImage = true
                     }
                     //saveImageToDownload(image: image)
                     performOCR(image: image)
@@ -104,14 +104,13 @@ struct ContentView: View {
                 Text("From PasteBoard")
                 
             })
-            Text(text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+            TextField("Recognition Result:", text: $dataModel.text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
         }.frame(width: 300, height: 300, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
     }
     
     func performOCR(image: NSImage){
         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
         let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-        print(textRecognitionRequest.recognitionLanguages)
         textRecognitionRequest.recognitionLanguages = ["en_US"]
         textRecognitionRequest.usesLanguageCorrection = true
         do {
@@ -134,19 +133,22 @@ struct ContentView: View {
                 transcript.append(observation.topCandidates(1)[0].string)
                 transcript.append("\n")
             }
-            self.text = transcript
+            DispatchQueue.main.async {
+                self.dataModel.text = transcript
+            }
+            
             if UserDefaults.standard.bool(forKey: "copyToPasteBoard") {
                 NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
                 NSPasteboard.general.setString(transcript, forType: .string)
             }
         }
-        
     }
 }
 
 struct TestImageDragDrop: View {
     @Binding var text: String
     @Binding var image: NSImage
+    @Binding var hasImage: Bool
     @State private var dragOver = false
     
     var body: some View {
@@ -161,6 +163,7 @@ struct TestImageDragDrop: View {
                         if let image = NSImage(contentsOf: url){
                             DispatchQueue.main.async {
                                 self.image = image
+                                self.hasImage = true
                             }
                             performOCR(image: image)
                         }
@@ -169,7 +172,14 @@ struct TestImageDragDrop: View {
                 
                 return true
             }
+            .onTapGesture{
+                if hasImage{
+                    openImagePreview()
+                }
+                
+            }
             .colorMultiply(dragOver ? .white : .gray)
+            
     }
     
     func performOCR(image: NSImage){
@@ -201,7 +211,9 @@ struct TestImageDragDrop: View {
                 transcript.append(observation.topCandidates(1)[0].string)
                 transcript.append("\n")
             }
-            self.text = transcript
+            DispatchQueue.main.async {
+                self.text = transcript
+            }
             if UserDefaults.standard.bool(forKey: "copyToPasteBoard") {
                 NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
                 NSPasteboard.general.setString(transcript, forType: .string)
@@ -210,14 +222,36 @@ struct TestImageDragDrop: View {
         
     }
     
+    func openImagePreview(){
 
+        let imagePreview = ImagePreviw(image: $image)
+        let imagePreviewWindow = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false)
+        imagePreviewWindow.center()
+        imagePreviewWindow.setFrameAutosaveName("Image Preview")
+        imagePreviewWindow.isReleasedWhenClosed = false
+        imagePreviewWindow.contentView = NSHostingView(rootView: imagePreview)
+        imagePreviewWindow.makeKeyAndOrderFront(nil)
+        
+    }
 }
 
+struct ImagePreviw: View{
+    @Binding var image: NSImage
+    var body: some View{
+        Image(nsImage: image)
+    }
+}
 
+#if DEBUG
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ContentView()
+            ContentView(dataModel: DataModel())
         }
     }
 }
+#endif

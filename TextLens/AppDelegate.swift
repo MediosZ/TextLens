@@ -9,6 +9,7 @@ import Cocoa
 import SwiftUI
 import Preferences
 import KeyboardShortcuts
+import Vision
 
 extension Preferences.PaneIdentifier {
     static let general = Self("general")
@@ -23,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     
     let userPreference = UserPreference()
+    let dataModel = DataModel()
     lazy var preferencesWindowController: PreferencesWindowController = PreferencesWindowController(
         preferencePanes: [GeneralPreferenceViewController(userPreference)],
         style: .segmentedControl,
@@ -37,7 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         // create the propver
         let popover = NSPopover()
-        let contentView = ContentView()
+        let contentView = ContentView(dataModel: dataModel)
             .environment(\.managedObjectContext, persistentContainer.viewContext)
         
         popover.contentSize = NSSize(width: 400, height: 400)
@@ -71,9 +73,52 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             if self.userPreference.useHotkey{
                 // The user pressed the keyboard shortcut for “unicorn mode”!
                 print("perform ocr from pasteboard")
+                self.performOCRFromPasteBoard()
             }
         }
 
+    }
+    
+    func performOCRFromPasteBoard(){
+        let pb = NSPasteboard.general
+        if let filepath = pb.string(forType: .fileURL), let url = URL(string: filepath), let image = NSImage(contentsOf: url){
+            performOCR(image: image)
+        }
+        else if let data = pb.data(forType: .tiff), let image = NSImage(data: data){
+            performOCR(image: image)
+        }
+    }
+    
+    func performOCR(image: NSImage){
+        let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
+        let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
+        textRecognitionRequest.recognitionLanguages = ["en_US"]
+        textRecognitionRequest.usesLanguageCorrection = true
+        do {
+            try requestHandler.perform([textRecognitionRequest])
+            DispatchQueue.main.async {
+                self.dataModel.image = image
+                self.dataModel.hasImage = true
+            }
+        } catch _ {}
+    }
+    
+    func recognizeTextHandler(request: VNRequest, error: Error?) {
+        if let results = request.results as? [VNRecognizedTextObservation]{
+            var transcript: String = ""
+            for observation in results {
+                transcript.append(observation.topCandidates(1)[0].string)
+                transcript.append("\n")
+            }
+            DispatchQueue.main.async {
+                self.dataModel.text = transcript
+            }
+            
+            if userPreference.copyToPasteBoard {
+                NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
+                NSPasteboard.general.setString(transcript, forType: .string)
+            }
+        }
     }
     
     @objc func togglePopover(_ sender: NSStatusBarButton) {
