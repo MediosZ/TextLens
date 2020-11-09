@@ -15,23 +15,27 @@ class DataModel: ObservableObject {
 
 }
 class UserPreference: ObservableObject {
-    @Published var startAtLaunch: Bool{
+    @Published var startAtLaunch: Bool
+        /*
         didSet{
             UserDefaults.standard.setValue(startAtLaunch, forKey: "startAtLaunch")
         }
-    }
-    @Published var copyToPasteBoard: Bool = UserDefaults.standard.bool(forKey: "copyToPasteBoard"){
+
+    } */
+    @Published var copyToPasteBoard: Bool
+        /*
         didSet{
             UserDefaults.standard.setValue(copyToPasteBoard, forKey: "copyToPasteBoard")
         }
-    }
-    @Published var useHotkey: Bool = UserDefaults.standard.bool(forKey: "useHotkey"){
+
+    } */
+    @Published var useHotkey: Bool
+        /*
         didSet{
             UserDefaults.standard.setValue(useHotkey, forKey: "useHotkey")
         }
-    }
-    
-    static let shared = UserPreference()
+
+    } */
     
     init(){
         startAtLaunch = UserDefaults.standard.bool(forKey: "startAtLaunch")

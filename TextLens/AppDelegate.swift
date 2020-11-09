@@ -54,24 +54,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         statusBarMenu = NSMenu(title: "Status Bar Menu")
         statusBarMenu.delegate = self
+        
         statusBarMenu.addItem(
             withTitle: "Preference",
             action: #selector(AppDelegate.openPreferencePanel),
             keyEquivalent: "")
+        
         statusBarMenu.addItem(
             withTitle: "Quit",
             action: #selector(AppDelegate.quit),
             keyEquivalent: "")
         
         
-        
-
-        
-        
         // hot keys
         KeyboardShortcuts.onKeyUp(for: .fromPasteBoard) {
-            // The user pressed the keyboard shortcut for “unicorn mode”!
-            print("perform ocr from pasteboard")
+            if self.userPreference.useHotkey{
+                // The user pressed the keyboard shortcut for “unicorn mode”!
+                print("perform ocr from pasteboard")
+            }
         }
 
     }

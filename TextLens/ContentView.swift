@@ -77,7 +77,7 @@ struct ContentView: View {
     var body: some View {
         VStack{
             TestImageDragDrop(text: $text, image: $image)
-                .frame(width: 200, height: 200, alignment: .center)
+                .frame(width: 150, height: 150, alignment: .center)
                 .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
             
             Button(action: {
@@ -169,7 +169,7 @@ struct TestImageDragDrop: View {
                 
                 return true
             }
-            .border(dragOver ? Color.red : Color.clear)
+            .colorMultiply(dragOver ? .white : .gray)
     }
     
     func performOCR(image: NSImage){

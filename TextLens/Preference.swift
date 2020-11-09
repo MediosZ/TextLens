@@ -40,20 +40,11 @@ struct GeneralView: View{
                 Text("General:")
             }){
                 Toggle("Copy Recognition Result to PasteBoard", isOn: $preference.copyToPasteBoard)
-                    .onReceive(Just(preference.copyToPasteBoard), perform: { value in
-                        preference.copyToPasteBoard = value
-                    })
                 Text("Copy recognition result to pasteboard automatically if recognition succeed.").preferenceDescription()
                 Toggle("Start at Launch", isOn: $preference.startAtLaunch)
-                    .onReceive(Just(preference.startAtLaunch), perform: { value in
-                        preference.startAtLaunch = value
-                })
             }
             Preferences.Section(label: {
                 Toggle("Hotkey:", isOn: $preference.useHotkey)
-                    .onReceive(Just(preference.useHotkey), perform: { value in
-                        preference.useHotkey = value
-                })
             }){
                 Text("Perform OCR on image from pasteboard")
                 KeyboardShortcuts.Recorder(for: .fromPasteBoard)
