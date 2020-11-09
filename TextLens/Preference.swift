@@ -9,6 +9,7 @@ import SwiftUI
 import Preferences
 import Combine
 import KeyboardShortcuts
+import LaunchAtLogin
 
 extension KeyboardShortcuts.Name {
     static let fromPasteBoard = Self("fromPasteBoard")
@@ -41,7 +42,10 @@ struct GeneralView: View{
             }){
                 Toggle("Copy Recognition Result to PasteBoard", isOn: $preference.copyToPasteBoard)
                 Text("Copy recognition result to pasteboard automatically if recognition succeed.").preferenceDescription()
-                Toggle("Start at Launch", isOn: $preference.startAtLaunch)
+                //Toggle("Start at Launch", isOn: $preference.startAtLaunch)
+                LaunchAtLogin.Toggle {
+                    Text("Launch at login")
+                }
             }
             Preferences.Section(label: {
                 Toggle("Hotkey:", isOn: $preference.useHotkey)

@@ -9,6 +9,7 @@ import Cocoa
 import SwiftUI
 import Preferences
 import KeyboardShortcuts
+import LaunchAtLogin
 import Vision
 
 extension Preferences.PaneIdentifier {

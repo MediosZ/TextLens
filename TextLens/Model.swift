@@ -9,6 +9,8 @@ import Foundation
 import Combine
 import SwiftUI
 
+
+
 class DataModel: ObservableObject {
     @Published var text: String = ""
     @Published var image: NSImage = NSImage(named: "DragBackground") ?? NSImage()
@@ -20,6 +22,7 @@ class UserPreference: ObservableObject {
     @Published var startAtLaunch: Bool{
         didSet{
             UserDefaults.standard.setValue(startAtLaunch, forKey: "startAtLaunch")
+            //LaunchAtLogin.isEnabled = startAtLaunch
         }
 
     }
