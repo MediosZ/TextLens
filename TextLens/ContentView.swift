@@ -104,8 +104,13 @@ struct ContentView: View {
                 Text("From PasteBoard")
                 
             })
-            TextField("Recognition Result:", text: $dataModel.text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
-        }.frame(width: 300, height: 300, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+            if #available(OSX 11.0, *) {
+                TextEditor(text: $dataModel.text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+            } else {
+                TextField("Recognition Result:", text: $dataModel.text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+            }
+            
+        }.frame(width: 300, height: 400, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
     }
     
     func performOCR(image: NSImage){
@@ -150,6 +155,8 @@ struct TestImageDragDrop: View {
     @Binding var image: NSImage
     @Binding var hasImage: Bool
     @State private var dragOver = false
+    
+    @State private var imagePreviewWindow: NSWindow?
     
     var body: some View {
         Image(nsImage: image)
@@ -223,19 +230,23 @@ struct TestImageDragDrop: View {
     }
     
     func openImagePreview(){
-
         let imagePreview = ImagePreviw(image: $image)
-        let imagePreviewWindow = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-            backing: .buffered,
-            defer: false)
-        imagePreviewWindow.center()
-        imagePreviewWindow.setFrameAutosaveName("Image Preview")
-        imagePreviewWindow.isReleasedWhenClosed = false
-        imagePreviewWindow.contentView = NSHostingView(rootView: imagePreview)
-        imagePreviewWindow.makeKeyAndOrderFront(nil)
-        
+        if let window = imagePreviewWindow{
+            window.contentView = NSHostingView(rootView: imagePreview)
+            window.makeKeyAndOrderFront(nil)
+        }
+        else{
+            imagePreviewWindow = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+                styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+                backing: .buffered,
+                defer: false)
+            imagePreviewWindow!.center()
+            imagePreviewWindow!.setFrameAutosaveName("Image Preview")
+            imagePreviewWindow!.isReleasedWhenClosed = false
+            imagePreviewWindow!.contentView = NSHostingView(rootView: imagePreview)
+            imagePreviewWindow!.makeKeyAndOrderFront(nil)
+        }
     }
 }
 
