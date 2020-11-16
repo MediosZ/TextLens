@@ -104,8 +104,11 @@ struct ContentView: View {
                 Text("From PasteBoard")
                 
             })
+            Divider()
             if #available(OSX 11.0, *) {
-                TextEditor(text: $dataModel.text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+                TextEditor(text: $dataModel.text)
+                    .padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+                    
             } else {
                 TextField("Recognition Result:", text: $dataModel.text).padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
             }

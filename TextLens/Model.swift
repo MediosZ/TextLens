@@ -12,7 +12,7 @@ import SwiftUI
 
 
 class DataModel: ObservableObject {
-    @Published var text: String = ""
+    @Published var text: String = "Recognition result will be here."
     @Published var image: NSImage = NSImage(named: "DragBackground") ?? NSImage()
     @Published var hasImage: Bool = false
     
