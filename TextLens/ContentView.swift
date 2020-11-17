@@ -119,6 +119,7 @@ struct ContentView: View {
     func performOCR(image: NSImage){
         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
         let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
+        print(textRecognitionRequest.recognitionLanguages)
         textRecognitionRequest.recognitionLanguages = ["en_US"]
         textRecognitionRequest.usesLanguageCorrection = true
         do {
