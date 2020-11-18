@@ -8,48 +8,6 @@
 import SwiftUI
 import Vision
 import Preferences
-class OCRManager{
-    var text: String
-    
-    private init() {
-        text = ""
-    }
-    
-    static let instance: OCRManager = OCRManager()
-    
-    func performOCR(image: NSImage){
-        let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
-        let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-        do {
-            try requestHandler.perform([textRecognitionRequest])
-        } catch _ {}
-    }
-
-    func recognizeTextHandler(request: VNRequest, error: Error?) {
-        /*
-        if let results = request.results as? [VNRecognizedTextObservation]{
-            var displayResults: [((CGPoint, CGPoint, CGPoint, CGPoint), String)] = []
-            for observation in results {
-                let candidate: VNRecognizedText = observation.topCandidates(1)[0]
-                let candidateBounds = (observation.bottomLeft, observation.bottomRight, observation.topRight, observation.topLeft)
-                displayResults.append((candidateBounds, candidate.string))
-            }
-        }
-        */
-        // Update transcript view.
-        if let results = request.results as? [VNRecognizedTextObservation]{
-            var transcript: String = ""
-            for observation in results {
-                transcript.append(observation.topCandidates(1)[0].string)
-                transcript.append("\n")
-            }
-            self.text = transcript
-            NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType.string], owner: nil)
-            NSPasteboard.general.setString(transcript, forType: .string)
-        }
-        
-    }
-}
 
 
 extension NSImage {
@@ -189,10 +147,11 @@ struct ContentView: View {
         }
     }
 
-    
     func openPreferencePanel() {
         print("Open Preference")
-        //preferencesWindowController.show()
+        var mutatableSelf = self
+        mutatableSelf.preferencesWindowController.show()
+        //getPreferencePanel().show()
     }
 
     func quit() {
