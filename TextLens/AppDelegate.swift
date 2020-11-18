@@ -26,13 +26,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let dataModel = DataModel()
     let userPreference = UserPreference()
     
-    lazy var preferencesWindowController: PreferencesWindowController = PreferencesWindowController(
-        preferencePanes: [GeneralPreferenceViewController(userPreference)],
-        style: .segmentedControl,
-        animated: true,
-        hidesToolbarForSingleItem: true
-    )
-
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
@@ -54,20 +47,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             button.action = #selector(togglePopover(_:))
             button.sendAction(on: [.leftMouseUp])
         }
-        
-        statusBarMenu = NSMenu(title: "Status Bar Menu")
-        statusBarMenu.delegate = self
-        
-        statusBarMenu.addItem(
-            withTitle: "Preference",
-            action: #selector(AppDelegate.openPreferencePanel),
-            keyEquivalent: "")
-        
-        statusBarMenu.addItem(
-            withTitle: "Quit",
-            action: #selector(AppDelegate.quit),
-            keyEquivalent: "")
-        
         
         // hot keys
         KeyboardShortcuts.onKeyUp(for: .fromPasteBoard) {
@@ -141,17 +120,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-
-    @objc func openPreferencePanel() {
-        print("Open Preference")
-        preferencesWindowController.show()
-    }
-
-    @objc func quit() {
-        print("Application Terminate")
-        NSApplication.shared.terminate(self)
-    }
-    
     @objc func menuDidClose(_ menu: NSMenu) {
         statusBarItem.menu = nil // remove menu so button works as before
     }
