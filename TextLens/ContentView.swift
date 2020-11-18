@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Vision
-
+import Preferences
 class OCRManager{
     var text: String
     
@@ -68,15 +68,51 @@ extension NSImage {
     }
 }
 
-
 struct ContentView: View {
     @ObservedObject var dataModel: DataModel
+    @ObservedObject var userPreference: UserPreference
+    var popover: NSPopover?
+    @State var isPopver: Bool = false
+    
+    lazy var preferencesWindowController: PreferencesWindowController = PreferencesWindowController(
+        preferencePanes: [GeneralPreferenceViewController(userPreference)],
+        style: .segmentedControl,
+        animated: true,
+        hidesToolbarForSingleItem: true
+    )
     
     var body: some View {
+        
         VStack{
+            HStack{
+                Spacer()
+                Menu {
+                    Button("Preferences", action: openPreferencePanel)
+                    Button("Quit", action: quit)
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+                .menuStyle(BorderlessButtonMenuStyle())
+                .frame(minWidth: 0, maxWidth: 30, minHeight: 0, maxHeight: 30, alignment: .trailing)
+                .padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
+                /*
+                Image(systemName: "gearshape")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(minWidth: 0, maxWidth: 30, minHeight: 0, maxHeight: 30, alignment: .trailing)
+                    .padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
+                    .foregroundColor(.gray)
+                    .onTapGesture {
+                        isPopver.toggle()
+                    }
+                    .popover(isPresented: $isPopver, arrowEdge: .leading){}
+                */
+            }
+
+            
             TestImageDragDrop(text: $dataModel.text, image: $dataModel.image, hasImage: $dataModel.hasImage)
                 .frame(width: 150, height: 150, alignment: .center)
-                .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
+                .padding(EdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20))
             
             Button(action: {
                 
@@ -151,6 +187,17 @@ struct ContentView: View {
                 NSPasteboard.general.setString(transcript, forType: .string)
             }
         }
+    }
+
+    
+    func openPreferencePanel() {
+        print("Open Preference")
+        //preferencesWindowController.show()
+    }
+
+    func quit() {
+        print("Application Terminate")
+        NSApplication.shared.terminate(self)
     }
 }
 
@@ -265,7 +312,7 @@ struct ImagePreviw: View{
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ContentView(dataModel: DataModel())
+            ContentView(dataModel: DataModel(), userPreference: UserPreference())
         }
     }
 }

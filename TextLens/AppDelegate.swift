@@ -23,9 +23,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var statusBarItem: NSStatusItem!
     var statusBarMenu: NSMenu!
     
-    
-    let userPreference = UserPreference()
     let dataModel = DataModel()
+    let userPreference = UserPreference()
+    
     lazy var preferencesWindowController: PreferencesWindowController = PreferencesWindowController(
         preferencePanes: [GeneralPreferenceViewController(userPreference)],
         style: .segmentedControl,
@@ -40,7 +40,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         // create the propver
         let popover = NSPopover()
-        let contentView = ContentView(dataModel: dataModel)
+        let contentView = ContentView(dataModel: dataModel, userPreference: userPreference)
             .environment(\.managedObjectContext, persistentContainer.viewContext)
         
         popover.contentSize = NSSize(width: 400, height: 400)
@@ -52,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let button = self.statusBarItem.button {
             button.image = NSImage(named: "Icon")
             button.action = #selector(togglePopover(_:))
-            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            button.sendAction(on: [.leftMouseUp])
         }
         
         statusBarMenu = NSMenu(title: "Status Bar Menu")
