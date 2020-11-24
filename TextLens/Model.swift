@@ -14,7 +14,10 @@ import SwiftUI
 class DataModel: ObservableObject {
     @Published var text: String = "Recognition result will be here."
     @Published var image: NSImage = NSImage(named: "DragBackground") ?? NSImage()
+    @Published var width: CGFloat = 0.0
+    @Published var height: CGFloat = 0.0
     @Published var hasImage: Bool = false
+    @Published var RecognitionResults: [(CGRect, String)] = []
     
 
 }

@@ -57,8 +57,10 @@ struct GeneralView: View{
     }
 }
 
+#if DEBUG
 struct GeneralView_Previews: PreviewProvider {
     static var previews: some View {
         GeneralView(preference: UserPreference())
     }
 }
+#endif

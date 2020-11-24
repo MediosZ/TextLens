@@ -10,27 +10,12 @@ import Vision
 import Preferences
 
 
-extension NSImage {
-    var pngData: Data? {
-        guard let tiffRepresentation = tiffRepresentation, let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else { return nil }
-        return bitmapImage.representation(using: .png, properties: [:])
-    }
-    func pngWrite(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
-        do {
-            try pngData?.write(to: url, options: options)
-            return true
-        } catch {
-            print(error)
-            return false
-        }
-    }
-}
-
 struct ContentView: View {
     @ObservedObject var dataModel: DataModel
     @ObservedObject var userPreference: UserPreference
-    var popover: NSPopover?
-    @State var isPopver: Bool = false
+    
+    @State var imageWidth: CGFloat = 0.0
+    @State var imageHeight: CGFloat = 0.0
     
     lazy var preferencesWindowController: PreferencesWindowController = PreferencesWindowController(
         preferencePanes: [GeneralPreferenceViewController(userPreference)],
@@ -53,22 +38,10 @@ struct ContentView: View {
                 .menuStyle(BorderlessButtonMenuStyle())
                 .frame(minWidth: 0, maxWidth: 30, minHeight: 0, maxHeight: 30, alignment: .trailing)
                 .padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
-                /*
-                Image(systemName: "gearshape")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(minWidth: 0, maxWidth: 30, minHeight: 0, maxHeight: 30, alignment: .trailing)
-                    .padding(EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10))
-                    .foregroundColor(.gray)
-                    .onTapGesture {
-                        isPopver.toggle()
-                    }
-                    .popover(isPresented: $isPopver, arrowEdge: .leading){}
-                */
             }
 
             
-            TestImageDragDrop(text: $dataModel.text, image: $dataModel.image, hasImage: $dataModel.hasImage)
+            TestImageDragDrop(text: $dataModel.text, image: $dataModel.image, hasImage: $dataModel.hasImage, recogResults: $dataModel.RecognitionResults)
                 .frame(width: 150, height: 150, alignment: .center)
                 .padding(EdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20))
             
@@ -77,18 +50,29 @@ struct ContentView: View {
                 let pb = NSPasteboard.general
                 if let filepath = pb.string(forType: .fileURL), let url = URL(string: filepath), let image = NSImage(contentsOf: url){
                     print("detect file url")
+                    print(image.size.width, image.size.height)
+                    self.imageWidth = image.size.width
+                    self.imageHeight = image.size.height
                     DispatchQueue.main.async {
-                        dataModel.image = image
-                        dataModel.hasImage = true
+                        self.dataModel.image = image
+                        self.dataModel.hasImage = true
+                        self.dataModel.width = image.size.width
+                        self.dataModel.height = image.size.height
+
                     }
                     //saveImageToDownload(image: image)
                     performOCR(image: image)
                 }
                 else if let data = pb.data(forType: .tiff), let image = NSImage(data: data){
                     print("detect image data")
+                    print(image.size.width, image.size.height)
+                    self.imageWidth = image.size.width
+                    self.imageHeight = image.size.height
                     DispatchQueue.main.async {
-                        dataModel.image = image
-                        dataModel.hasImage = true
+                        self.dataModel.image = image
+                        self.dataModel.hasImage = true
+                        self.dataModel.width = image.size.width
+                        self.dataModel.height = image.size.height
                     }
                     //saveImageToDownload(image: image)
                     performOCR(image: image)
@@ -121,15 +105,25 @@ struct ContentView: View {
         } catch _ {}
     }
     
-    func saveImageToDownload(image: NSImage, name: String = "image.png"){
-        let desktopURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
-        let destinationURL = desktopURL.appendingPathComponent(name)
-        if image.pngWrite(to: destinationURL) {
-            print("File \(image) saved ro \(destinationURL)")
-        }
+    func convert(rect: CGRect) -> CGRect{
+        
+        let width = self.imageWidth
+        let height = self.imageHeight
+        //print(width, height)
+        return CGRect(x: rect.minX * width, y: rect.minY*height, width: rect.width * width, height: rect.height * height)
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
+        if let results = request.results as? [VNRecognizedTextObservation]{
+            var displayResults: [(CGRect, String)] = []
+            for observation in results {
+                //print(observation.boundingBox)
+                let candidate: VNRecognizedText = observation.topCandidates(1)[0]
+                displayResults.append((convert(rect: observation.boundingBox), candidate.string))
+            }
+            
+            dataModel.RecognitionResults = displayResults
+        }
         if let results = request.results as? [VNRecognizedTextObservation]{
             var transcript: String = ""
             for observation in results {
@@ -163,7 +157,10 @@ struct ContentView: View {
 struct TestImageDragDrop: View {
     @Binding var text: String
     @Binding var image: NSImage
+    @State var width: CGFloat = 0.0
+    @State var height: CGFloat = 0.0
     @Binding var hasImage: Bool
+    @Binding var recogResults: [(CGRect, String)]
     @State private var dragOver = false
     
     @State private var imagePreviewWindow: NSWindow?
@@ -178,6 +175,8 @@ struct TestImageDragDrop: View {
                        let path = NSString(data: data, encoding: 4),
                        let url = URL(string: path as String) {
                         if let image = NSImage(contentsOf: url){
+                            self.width = image.size.width
+                            self.height = image.size.height
                             DispatchQueue.main.async {
                                 self.image = image
                                 self.hasImage = true
@@ -190,6 +189,7 @@ struct TestImageDragDrop: View {
                 return true
             }
             .onTapGesture{
+                print("tep")
                 if hasImage{
                     openImagePreview()
                 }
@@ -209,18 +209,26 @@ struct TestImageDragDrop: View {
             try requestHandler.perform([textRecognitionRequest])
         } catch _ {}
     }
+    func convert(rect: CGRect) -> CGRect{
+        
+        let width = self.width
+        let height = self.height
+        //print(width, height)
+        return CGRect(x: rect.minX * width, y: rect.minY*height, width: rect.width * width, height: rect.height * height)
+    }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
-        /*
+        
         if let results = request.results as? [VNRecognizedTextObservation]{
-            var displayResults: [((CGPoint, CGPoint, CGPoint, CGPoint), String)] = []
+            var displayResults: [(CGRect, String)] = []
             for observation in results {
                 let candidate: VNRecognizedText = observation.topCandidates(1)[0]
-                let candidateBounds = (observation.bottomLeft, observation.bottomRight, observation.topRight, observation.topLeft)
-                displayResults.append((candidateBounds, candidate.string))
+                displayResults.append((convert(rect: observation.boundingBox), candidate.string))
             }
+            recogResults = displayResults
+            
         }
-        */
+        
         // Update transcript view.
         if let results = request.results as? [VNRecognizedTextObservation]{
             var transcript: String = ""
@@ -240,14 +248,17 @@ struct TestImageDragDrop: View {
     }
     
     func openImagePreview(){
-        let imagePreview = ImagePreviw(image: $image)
+        print("open image preview")
+        print($recogResults)
+        let imagePreview = ImagePreviw(image: $image, data: $recogResults)
         if let window = imagePreviewWindow{
             window.contentView = NSHostingView(rootView: imagePreview)
             window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
         }
         else{
             imagePreviewWindow = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+                contentRect: NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
                 backing: .buffered,
                 defer: false)
@@ -256,14 +267,20 @@ struct TestImageDragDrop: View {
             imagePreviewWindow!.isReleasedWhenClosed = false
             imagePreviewWindow!.contentView = NSHostingView(rootView: imagePreview)
             imagePreviewWindow!.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
         }
     }
 }
 
 struct ImagePreviw: View{
     @Binding var image: NSImage
+    @Binding var data: [(CGRect, String)]
     var body: some View{
-        Image(nsImage: image)
+        ZStack{
+            Image(nsImage: image)
+            AnnotationLayer(data: $data)
+        }.frame(width: image.size.width, height: image.size.height, alignment: .center)
+        
     }
 }
 

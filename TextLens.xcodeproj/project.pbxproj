@@ -17,6 +17,7 @@
 		9E17FE5D255599E000FFDC62 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9E17FE5B255599E000FFDC62 /* Main.storyboard */; };
 		9E17FE69255599E000FFDC62 /* TextLensTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17FE68255599E000FFDC62 /* TextLensTests.swift */; };
 		9E17FE74255599E000FFDC62 /* TextLensUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17FE73255599E000FFDC62 /* TextLensUITests.swift */; };
+		9E29380E256BF909008163AE /* AnnotationLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E29380D256BF909008163AE /* AnnotationLayer.swift */; };
 		9E331ADF25598EA300396FA0 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 9E331ADE25598EA300396FA0 /* LaunchAtLogin */; };
 		9E4D99A42557C534000694EA /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4D99A32557C534000694EA /* Preference.swift */; };
 		9E4D99B82557F156000694EA /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4D99B72557F156000694EA /* Model.swift */; };
@@ -55,6 +56,7 @@
 		9E17FE6F255599E000FFDC62 /* TextLensUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TextLensUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E17FE73255599E000FFDC62 /* TextLensUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLensUITests.swift; sourceTree = "<group>"; };
 		9E17FE75255599E000FFDC62 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9E29380D256BF909008163AE /* AnnotationLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationLayer.swift; sourceTree = "<group>"; };
 		9E4D99A32557C534000694EA /* Preference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preference.swift; sourceTree = "<group>"; };
 		9E4D99B72557F156000694EA /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,6 +122,7 @@
 				9E17FE5F255599E000FFDC62 /* TextLens.entitlements */,
 				9E17FE53255599DF00FFDC62 /* TextLens.xcdatamodeld */,
 				9E17FE58255599E000FFDC62 /* Preview Content */,
+				9E29380D256BF909008163AE /* AnnotationLayer.swift */,
 			);
 			path = TextLens;
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E29380E256BF909008163AE /* AnnotationLayer.swift in Sources */,
 				9E4D99B82557F156000694EA /* Model.swift in Sources */,
 				9E17FE52255599DF00FFDC62 /* ContentView.swift in Sources */,
 				9E17FE55255599DF00FFDC62 /* TextLens.xcdatamodeld in Sources */,
@@ -496,6 +500,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = club.mediosz.textlens;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -521,6 +526,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = club.mediosz.textlens;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

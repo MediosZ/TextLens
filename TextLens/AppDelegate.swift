@@ -21,7 +21,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     var popover: NSPopover!
     var statusBarItem: NSStatusItem!
-    var statusBarMenu: NSMenu!
+    
+    var width: CGFloat = 0.0
+    var height: CGFloat = 0.0
     
     let dataModel = DataModel()
     let userPreference = UserPreference()
@@ -62,9 +64,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func performOCRFromPasteBoard(){
         let pb = NSPasteboard.general
         if let filepath = pb.string(forType: .fileURL), let url = URL(string: filepath), let image = NSImage(contentsOf: url){
+            self.dataModel.hasImage = true
+            self.width = image.size.width
+            self.height = image.size.height
+            DispatchQueue.main.async {
+                self.dataModel.image = image
+            }
             performOCR(image: image)
         }
         else if let data = pb.data(forType: .tiff), let image = NSImage(data: data){
+            self.dataModel.hasImage = true
+            self.width = image.size.width
+            self.height = image.size.height
+            DispatchQueue.main.async {
+                self.dataModel.image = image
+            }
             performOCR(image: image)
         }
     }
@@ -76,14 +90,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         textRecognitionRequest.usesLanguageCorrection = true
         do {
             try requestHandler.perform([textRecognitionRequest])
-            DispatchQueue.main.async {
-                self.dataModel.image = image
-                self.dataModel.hasImage = true
-            }
         } catch _ {}
+    }
+    func convert(rect: CGRect) -> CGRect{
+        
+        let width = self.width
+        let height = self.height
+        print(width, height)
+        return CGRect(x: rect.minX * width, y: rect.minY*height, width: rect.width * width, height: rect.height * height)
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
+        if let results = request.results as? [VNRecognizedTextObservation]{
+            var displayResults: [(CGRect, String)] = []
+            for observation in results {
+                let candidate: VNRecognizedText = observation.topCandidates(1)[0]
+                displayResults.append((convert(rect: observation.boundingBox), candidate.string))
+            }
+            self.dataModel.RecognitionResults = displayResults
+        }
+        
         if let results = request.results as? [VNRecognizedTextObservation]{
             var transcript: String = ""
             for observation in results {
@@ -102,22 +128,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     @objc func togglePopover(_ sender: NSStatusBarButton) {
-        if let button = self.statusBarItem.button, let event = NSApp.currentEvent {
-            if event.type == NSEvent.EventType.rightMouseUp{
-                statusBarItem.menu = statusBarMenu // add menu to button...
-                statusBarItem.button?.performClick(nil) // ...and click
+        if let button = self.statusBarItem.button{
+            if self.popover.isShown {
+                self.popover.performClose(sender)
+                
+            } else {
+                self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
+                self.popover.contentViewController?.view.window?.becomeKey()
             }
-            else{
-                if self.popover.isShown {
-                    self.popover.performClose(sender)
-                    
-                } else {
-                    self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
-                    self.popover.contentViewController?.view.window?.becomeKey()
-                }
-            }
-
         }
+
+        
     }
 
     @objc func menuDidClose(_ menu: NSMenu) {
