@@ -489,7 +489,7 @@
 				CODE_SIGN_ENTITLEMENTS = TextLens/TextLens.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"TextLens/Preview Content\"";
 				DEVELOPMENT_TEAM = 6R26QM98UF;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -500,7 +500,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = club.mediosz.textlens;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -515,7 +515,7 @@
 				CODE_SIGN_ENTITLEMENTS = TextLens/TextLens.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"TextLens/Preview Content\"";
 				DEVELOPMENT_TEAM = 6R26QM98UF;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -526,7 +526,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = club.mediosz.textlens;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

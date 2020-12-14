@@ -97,9 +97,7 @@ struct ContentView: View {
     func performOCR(image: NSImage){
         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
         let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-        print(textRecognitionRequest.recognitionLanguages)
-        textRecognitionRequest.recognitionLanguages = ["en_US"]
-        textRecognitionRequest.usesLanguageCorrection = true
+        textRecognitionRequest.recognitionLanguages = ["zh-Hans", "zh-Hant", "en-US", "fr-FR", "it-IT", "de-DE", "es-ES", "pt-BR"]
         do {
             try requestHandler.perform([textRecognitionRequest])
         } catch _ {}
@@ -110,7 +108,7 @@ struct ContentView: View {
         let width = self.imageWidth
         let height = self.imageHeight
         //print(width, height)
-        return CGRect(x: rect.minX * width, y: rect.minY*height, width: rect.width * width, height: rect.height * height)
+        return CGRect(x: rect.minX * width, y: (1 - rect.minY - rect.height) * height, width: rect.width * width, height: rect.height * height)
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
@@ -202,9 +200,7 @@ struct TestImageDragDrop: View {
     func performOCR(image: NSImage){
         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
         let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-        print(textRecognitionRequest.recognitionLanguages)
-        textRecognitionRequest.recognitionLanguages = ["en_US"]
-        textRecognitionRequest.usesLanguageCorrection = true
+        textRecognitionRequest.recognitionLanguages = ["zh-Hans", "zh-Hant", "en-US", "fr-FR", "it-IT", "de-DE", "es-ES", "pt-BR"]
         do {
             try requestHandler.perform([textRecognitionRequest])
         } catch _ {}
@@ -214,7 +210,7 @@ struct TestImageDragDrop: View {
         let width = self.width
         let height = self.height
         //print(width, height)
-        return CGRect(x: rect.minX * width, y: rect.minY*height, width: rect.width * width, height: rect.height * height)
+        return CGRect(x: rect.minX * width, y: (1 - rect.minY - rect.height) * height, width: rect.width * width, height: rect.height * height)
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
@@ -225,7 +221,9 @@ struct TestImageDragDrop: View {
                 let candidate: VNRecognizedText = observation.topCandidates(1)[0]
                 displayResults.append((convert(rect: observation.boundingBox), candidate.string))
             }
-            recogResults = displayResults
+            DispatchQueue.main.async {
+                recogResults = displayResults
+            }
             
         }
         

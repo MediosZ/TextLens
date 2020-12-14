@@ -86,8 +86,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func performOCR(image: NSImage){
         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage(forProposedRect: nil, context: nil, hints: nil)!, options: [:])
         let textRecognitionRequest = VNRecognizeTextRequest(completionHandler: recognizeTextHandler)
-        textRecognitionRequest.recognitionLanguages = ["en_US"]
-        textRecognitionRequest.usesLanguageCorrection = true
+        textRecognitionRequest.recognitionLanguages = ["zh-Hans", "zh-Hant", "en-US", "fr-FR", "it-IT", "de-DE", "es-ES", "pt-BR"]
+
         do {
             try requestHandler.perform([textRecognitionRequest])
         } catch _ {}
@@ -97,7 +97,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let width = self.width
         let height = self.height
         print(width, height)
-        return CGRect(x: rect.minX * width, y: rect.minY*height, width: rect.width * width, height: rect.height * height)
+        return CGRect(x: rect.minX * width, y: (1 - rect.minY - rect.height) * height, width: rect.width * width, height: rect.height * height)
     }
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
