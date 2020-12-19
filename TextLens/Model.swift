@@ -17,10 +17,9 @@ class DataModel: ObservableObject {
     @Published var width: CGFloat = 0.0
     @Published var height: CGFloat = 0.0
     @Published var hasImage: Bool = false
-    @Published var RecognitionResults: [(CGRect, String)] = []
-    
-
+    @Published var RecognitionResults: [(CGRect, String, Bool)] = []
 }
+
 class UserPreference: ObservableObject {
     @Published var startAtLaunch: Bool{
         didSet{

@@ -102,10 +102,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     func recognizeTextHandler(request: VNRequest, error: Error?) {
         if let results = request.results as? [VNRecognizedTextObservation]{
-            var displayResults: [(CGRect, String)] = []
+            var displayResults: [(CGRect, String, Bool)] = []
             for observation in results {
                 let candidate: VNRecognizedText = observation.topCandidates(1)[0]
-                displayResults.append((convert(rect: observation.boundingBox), candidate.string))
+                displayResults.append((observation.boundingBox, candidate.string, true))
             }
             self.dataModel.RecognitionResults = displayResults
         }

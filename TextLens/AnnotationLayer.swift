@@ -8,23 +8,20 @@
 import SwiftUI
 
 struct AnnotationLayer: View {
-    @Binding var data: [(CGRect, String)]
+    @EnvironmentObject var data: DataModel
+    //@Binding var screenWidth: CGFloat
+    //@Binding var screenHeight: CGFloat
     var body: some View {
-
         Path{ path in
-            data.forEach{ (rect, result) in
-                path.addRect(rect)
+            data.RecognitionResults.forEach{ (rect, result, selected) in
+                if(selected){
+                    path.addRect(CGRect(x: rect.minX * data.image.size.width,
+                                        y: (1 - rect.minY - rect.height) * data.image.size.height,
+                                        width: rect.width * data.image.size.width,
+                                        height: rect.height * data.image.size.height))
+                }
             }
         }.fill(Color.red.opacity(0.3))
     }
 }
 
-struct AnnotationLayer_Previews: PreviewProvider {
-    @State static var data: [(CGRect, String)] = [
-        (CGRect(x: 10, y: 10, width: 200, height: 100), "hello"),
-        (CGRect(x: 10, y: 200, width: 300, height: 100), "hello"),
-    ]
-    static var previews: some View {
-        AnnotationLayer(data: $data)
-    }
-}
