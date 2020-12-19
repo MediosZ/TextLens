@@ -26,6 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var height: CGFloat = 0.0
     
     let dataModel = DataModel()
+    let imageModel = ImageModel()
     let userPreference = UserPreference()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
@@ -35,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         
         // create the propver
         let popover = NSPopover()
-        let contentView = ContentView(dataModel: dataModel, userPreference: userPreference)
+        let contentView = ContentView(dataModel: dataModel, imageModel: imageModel, userPreference: userPreference)
             .environment(\.managedObjectContext, persistentContainer.viewContext)
         
         popover.contentSize = NSSize(width: 400, height: 400)
@@ -68,7 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self.width = image.size.width
             self.height = image.size.height
             DispatchQueue.main.async {
-                self.dataModel.image = image
+                self.imageModel.image = image
             }
             performOCR(image: image)
         }
@@ -77,7 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self.width = image.size.width
             self.height = image.size.height
             DispatchQueue.main.async {
-                self.dataModel.image = image
+                self.imageModel.image = image
             }
             performOCR(image: image)
         }

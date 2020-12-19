@@ -12,6 +12,7 @@ import Preferences
 
 struct ContentView: View {
     @ObservedObject var dataModel: DataModel
+    @ObservedObject var imageModel: ImageModel
     @ObservedObject var userPreference: UserPreference
     
     @State var imageWidth: CGFloat = 0.0
@@ -41,9 +42,11 @@ struct ContentView: View {
             }
 
             
-            TestImageDragDrop()
+            TestImageDragDrop(imageModel: imageModel)
                 .frame(width: 150, height: 150, alignment: .center)
-                .padding(EdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20)).environmentObject(dataModel)
+                .padding(EdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20))
+                .environmentObject(dataModel)
+                //.environmentObject(imageModel)
             
             Button(action: {
                 
@@ -54,7 +57,7 @@ struct ContentView: View {
                     self.imageWidth = image.size.width
                     self.imageHeight = image.size.height
                     DispatchQueue.main.async {
-                        self.dataModel.image = image
+                        self.imageModel.image = image
                         self.dataModel.hasImage = true
                         self.dataModel.width = image.size.width
                         self.dataModel.height = image.size.height
@@ -69,7 +72,7 @@ struct ContentView: View {
                     self.imageWidth = image.size.width
                     self.imageHeight = image.size.height
                     DispatchQueue.main.async {
-                        self.dataModel.image = image
+                        self.imageModel.image = image
                         self.dataModel.hasImage = true
                         self.dataModel.width = image.size.width
                         self.dataModel.height = image.size.height
@@ -154,6 +157,7 @@ struct ContentView: View {
 
 struct TestImageDragDrop: View {
     @EnvironmentObject var data: DataModel
+    var imageModel: ImageModel
     //@Binding var text: String
     //@Binding var image: NSImage
     @State var width: CGFloat = 0.0
@@ -165,7 +169,7 @@ struct TestImageDragDrop: View {
     @State private var imagePreviewWindow: NSWindow?
     
     var body: some View {
-        Image(nsImage: data.image)
+        Image(nsImage: imageModel.image)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .onDrop(of: ["public.file-url"], isTargeted: $dragOver) { providers -> Bool in
@@ -177,7 +181,7 @@ struct TestImageDragDrop: View {
                             self.width = image.size.width
                             self.height = image.size.height
                             DispatchQueue.main.async {
-                                self.data.image = image
+                                self.imageModel.image = image
                                 self.data.hasImage = true
                             }
                             performOCR(image: image)
@@ -248,7 +252,9 @@ struct TestImageDragDrop: View {
     func openImagePreview(){
         print("open image preview")
         print(data.RecognitionResults)
-        let imagePreview = TLTextEditor().environmentObject(data)
+        let imagePreview = TLTextEditor(image: imageModel.image)
+            .environmentObject(data)
+            //.environmentObject(imageModel)
         if let window = imagePreviewWindow{
             window.contentView = NSHostingView(rootView: imagePreview)
             window.makeKeyAndOrderFront(nil)
@@ -256,7 +262,7 @@ struct TestImageDragDrop: View {
         }
         else{
             imagePreviewWindow = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: data.image.size.width, height: data.image.size.height),
+                contentRect: NSRect(x: 0, y: 0, width: imageModel.image.size.width, height: imageModel.image.size.height),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
                 backing: .buffered,
                 defer: false)
@@ -274,7 +280,7 @@ struct TestImageDragDrop: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ContentView(dataModel: DataModel(), userPreference: UserPreference())
+            ContentView(dataModel: DataModel(), imageModel: ImageModel(), userPreference: UserPreference())
         }
     }
 }
